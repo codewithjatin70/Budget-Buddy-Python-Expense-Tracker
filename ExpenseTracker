@@ -1,0 +1,103 @@
+# -----------------------------------------
+# 💰 Budget Buddy – Python Expense Tracker
+# -----------------------------------------
+
+# Display welcome message
+show = "Welcome to The Expense Tracker"
+
+# Import required modules
+import sqlite3      # For database storage
+import time         # For getting current date
+
+# Connect to SQLite database (creates file if not exists)
+database = sqlite3.connect("expenses.db")
+cursor = database.cursor()
+
+# Create 'expenses' table if it does not already exist
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS expenses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Unique ID for each expense
+    amount REAL,                           -- Expense amount
+    category TEXT,                         -- Expense category (e.g., Food, Travel)
+    description TEXT,                      -- Short description
+    date TEXT                              -- Date of expense
+)
+''')
+database.commit()
+
+# ----------------------------
+# Function: Add a new expense
+# ----------------------------
+def add_expense(amount, category, description):
+    date = time.strftime("%Y-%m-%d")  # Get today's date in YYYY-MM-DD format
+    cursor.execute(
+        "INSERT INTO expenses (amount, category, description, date) VALUES (?, ?, ?, ?)",
+        (amount, category, description, date)
+    )
+    database.commit()
+    print("✅ Expense added successfully!")
+
+# ----------------------------
+# Function: View all expenses
+# ----------------------------
+def view_expense():
+    cursor.execute("SELECT * FROM expenses")  # Fetch all records
+    rows = cursor.fetchall()
+    if rows:
+        print("\n📜 Expense List:")
+        for row in rows:
+            print(f"ID: {row[0]}, Amount: ₹{row[1]}, Category: {row[2]}, Desc: {row[3]}, Date: {row[4]}")
+    else:
+        print("No expenses found!")
+
+# --------------------------------------------
+# Function: Show monthly total expense summary
+# --------------------------------------------
+def monthly_report(month, year):
+    cursor.execute(
+        "SELECT SUM(amount) FROM expenses WHERE strftime('%m', date) = ? AND strftime('%Y', date) = ?",
+        (f"{month:02}", str(year))
+    )
+    total = cursor.fetchone()[0]  # Get total amount
+    if total:
+        print(f"\n📊 Total expenses for {month}/{year}: ₹{total}")
+    else:
+        print("No expenses found for this month!")
+
+# ----------------------
+# Main program loop
+# ----------------------
+while True:
+    print("\n📌 Expense Tracker Menu")
+    print("1. Add Expense")
+    print("2. View Expenses")
+    print("3. Monthly Report")
+    print("4. Exit")
+   
+    choice = input("Enter Choice: ")
+    
+    if choice == "1":
+        # Get user input and add expense
+        amount = float(input("Enter amount: ₹"))
+        category = input("Enter category: ")
+        description = input("Enter description: ")
+        add_expense(amount, category, description)
+
+    elif choice == "2":
+        # Display all expenses
+        view_expense()
+
+    elif choice == "3":
+        # Show monthly report
+        month = int(input("Enter month (1-12): "))
+        year = int(input("Enter year (e.g., 2025): "))
+        monthly_report(month, year)
+
+    elif choice == "4":
+        # Exit the program
+        print("Goodbye!")
+        break
+
+    else:
+        # Invalid input handling
+        print("❌ Invalid choice, try again!")
