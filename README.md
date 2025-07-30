@@ -1,5 +1,12 @@
 # 💰 Budget Buddy – Python Expense Tracker (SQLite)
 
+## 📷 Demo Screenshot
+<img src="https://github.com/user-attachments/assets/abec74ea-1d1f-4695-b430-85d8ae5c79ad" alt="Expense Tracker Demo" width="500" height="600">
+
+
+
+
+
 **Budget Buddy** is a simple **command-line Expense Tracker** built in Python using an SQLite database.  
 It allows you to **add, view, and analyze** your expenses easily with local database storage.
 
